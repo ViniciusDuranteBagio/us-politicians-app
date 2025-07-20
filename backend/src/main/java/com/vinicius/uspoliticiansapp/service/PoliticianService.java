@@ -1,9 +1,10 @@
 package com.vinicius.uspoliticiansapp.service;
 
 import com.vinicius.uspoliticiansapp.client.OpenStatesApiClient;
-import com.vinicius.uspoliticiansapp.client.dto.PeopleQueryParamsDTO;
+import com.vinicius.uspoliticiansapp.client.factory.PeopleQueryParamsFactory;
 import com.vinicius.uspoliticiansapp.client.response.OpenStatesPeopleResponse;
 import com.vinicius.uspoliticiansapp.dto.PoliticianDTO;
+import com.vinicius.uspoliticiansapp.mapper.PersonToPoliticianMapper;
 import com.vinicius.uspoliticiansapp.mapper.PoliticianMapper;
 import com.vinicius.uspoliticiansapp.model.Politician;
 import com.vinicius.uspoliticiansapp.model.State;
@@ -42,7 +43,7 @@ public class PoliticianService {
             politicians = fetchAndSavePoliticiansFromApi(stateId, party);
         }
 
-        return EntityListToDTO(politicians);
+        return entityListToDTO(politicians);
     }
 
     private List<Politician> fetchAndSavePoliticiansFromApi(Long stateId, String party) {
@@ -58,16 +59,10 @@ public class PoliticianService {
         OpenStatesPeopleResponse response;
 
         do {
-            // passar esse param aqui para factory
-            PeopleQueryParamsDTO params = PeopleQueryParamsDTO.builder()
-                    .page(page)
-                    .perPage(perPage)
-                    .jurisdiction(state.getExternalId())
-                    .build();
-            response = apiClient.fetchPeople(params);
+            response = apiClient.fetchPeople(PeopleQueryParamsFactory.forJurisdiction(page, perPage, state.getExternalId()));
 
             response.getResults().forEach(person -> {
-                allPoliticians.add(PersonToPolitician(person, state));
+                allPoliticians.add(PersonToPoliticianMapper.toPolitician(person, state));
             });
 
             page++;
@@ -84,22 +79,9 @@ public class PoliticianService {
         return allPoliticians;
     }
 
-    // todo isso não deve ser aqui, verificar onde deve ir
-    private Politician PersonToPolitician(OpenStatesPeopleResponse.Person person, State state)
-    {
-        Politician politician = new Politician();
-        politician.setExternalId(person.getId());
-        politician.setName(person.getName());
-        politician.setParty(person.getParty());
-        politician.setRole(person.getCurrent_role() != null ? person.getCurrent_role().getTitle() : null);
-        politician.setState(state);
-        politician.setPhotoUrl(person.getImage());
-        politician.setUpdatedAt(LocalDateTime.now()); // isso não deve estar aqui, deve ser controlado pelo spring ou pelo banco
-        return politician;
-    }
 
-    private List<PoliticianDTO> EntityListToDTO(List<Politician> politicians)
-    {
+
+    private List<PoliticianDTO> entityListToDTO(List<Politician> politicians) {
         return politicians.stream()
                 .map(PoliticianMapper::toDTO)
                 .collect(Collectors.toList());

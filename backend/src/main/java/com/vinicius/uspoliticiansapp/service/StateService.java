@@ -22,25 +22,34 @@ public class StateService {
         this.apiClient = apiClient;
     }
 
+    public State findById(Long id)
+    {
+        return stateRepository.findById(id).orElse(null);
+    }
+
     public List<StateDTO> getAllStates() {
         List<State> states = stateRepository.findAll();
-        if (!states.isEmpty()) {
-            return states.stream().map(StateMapper::toDTO).collect(Collectors.toList());
+        if (states.isEmpty()) {
+            states = fetchAndSaveStatesFromApi();
         }
+        return entityListToDTO(states);
+    }
 
-        List<State> fetchedStates = fetchAndSaveStatesFromApi();
-        return fetchedStates.stream().map(StateMapper::toDTO).collect(Collectors.toList());
+    private List<StateDTO> entityListToDTO(List<State> states)
+    {
+        return states.stream()
+                .map(StateMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     private List<State> fetchAndSaveStatesFromApi() {
         List<State> allStates = new ArrayList<>();
 
         int page = 1;
-        int perPage = 52;
         OpenStatesJurisdictionsResponse response;
 
         do {
-            response = apiClient.fetchJurisdictions(JurisdictionQueryParamsFactory.forStates(page, perPage));
+            response = apiClient.fetchJurisdictions(JurisdictionQueryParamsFactory.forStates(page));
 
             response.getResults().forEach(jurisdiction -> {
                 State state = new State();
