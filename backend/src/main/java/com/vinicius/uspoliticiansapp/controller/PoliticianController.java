@@ -1,5 +1,6 @@
 package com.vinicius.uspoliticiansapp.controller;
 
+import com.vinicius.uspoliticiansapp.dto.PaginatedApiResponseDTO;
 import com.vinicius.uspoliticiansapp.dto.PoliticianDTO;
 import com.vinicius.uspoliticiansapp.service.PoliticianService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +21,13 @@ public class PoliticianController {
     }
 
     @GetMapping
-    public List<PoliticianDTO> list(@RequestParam(name = "state") Long stateId, @RequestParam(required = false) String party)
-    {
-        return service.getPoliticians(stateId, party);
+    public PaginatedApiResponseDTO<PoliticianDTO> list(
+            @RequestParam(name = "state") Long stateId,
+            @RequestParam(required = false) String party,
+            @RequestParam(required = false, defaultValue = "1") int currentPage,
+            @RequestParam(required = false, defaultValue = "30") int perPage
+    ) {
+        List<PoliticianDTO> politicians = service.getPoliticians(stateId, party);
+        return PaginatedApiResponseDTO.success(politicians, currentPage, perPage);
     }
 }

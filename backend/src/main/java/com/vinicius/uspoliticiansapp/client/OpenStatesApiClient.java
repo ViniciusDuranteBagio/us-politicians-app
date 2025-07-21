@@ -55,8 +55,6 @@ public class OpenStatesApiClient {
             builder.queryParam("jurisdiction", params.getJurisdiction());
         }
         
-
-
         String uri = builder.toUriString();
 
         return webClient.get()
