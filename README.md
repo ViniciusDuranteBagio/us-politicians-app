@@ -17,7 +17,7 @@ O projeto já está pronto para rodar com Docker Compose, que sobe banco de dado
 
 **Passos:**
 
-1. Crie um arquivo `.env` na raiz do projeto com as variáveis de ambiente necessárias para o banco e backend (exemplo: `POSTGRES_USER`, `POSTGRES_PASSWORD`, etc).
+1. O projeto já inclui um arquivo env.example na raiz. Basta renomeá-lo para .env e ajustar as configurações conforme necessário para o seu ambiente (por exemplo, usuário e senha do banco de dados, etc).
 2. No terminal, na raiz do projeto, execute:
    ```bash
    docker-compose up --build
