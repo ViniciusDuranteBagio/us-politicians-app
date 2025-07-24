@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import com.vinicius.uspoliticiansapp.model.Politician;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PoliticianRepository extends JpaRepository<Politician, Long> {
@@ -13,4 +14,6 @@ public interface PoliticianRepository extends JpaRepository<Politician, Long> {
     List<Politician> findAllByStateId(Long stateId);
 
     List<Politician> findAllByStateIdAndParty(Long stateId, String party);
+
+    Optional<Politician> findByExternalId(String externalId);
 }

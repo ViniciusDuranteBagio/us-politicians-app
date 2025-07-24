@@ -4,9 +4,11 @@ import com.vinicius.uspoliticiansapp.dto.PaginatedApiResponseDTO;
 import com.vinicius.uspoliticiansapp.dto.StateDTO;
 import com.vinicius.uspoliticiansapp.service.StateService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
 
 
 @RestController
@@ -29,5 +31,11 @@ public class StateController {
     @GetMapping("/all")
     public PaginatedApiResponseDTO<StateDTO> getAllStates() {
         return PaginatedApiResponseDTO.success(stateService.getAllStates());
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refreshStates() {
+        stateService.refreshStatesFromApi();
+        return ResponseEntity.ok().build();
     }
 }
