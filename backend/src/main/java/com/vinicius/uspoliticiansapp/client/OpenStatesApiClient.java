@@ -4,6 +4,7 @@ import com.vinicius.uspoliticiansapp.client.dto.JurisdictionQueryParamsDTO;
 import com.vinicius.uspoliticiansapp.client.dto.PeopleQueryParamsDTO;
 import com.vinicius.uspoliticiansapp.client.response.OpenStatesJurisdictionsResponse;
 import com.vinicius.uspoliticiansapp.client.response.OpenStatesPeopleResponse;
+import com.vinicius.uspoliticiansapp.exception.ExternalApiAuthException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -36,6 +37,11 @@ public class OpenStatesApiClient {
         return webClient.get()
                 .uri(uri)
                 .retrieve()
+                .onStatus(status -> status.value() == 401 || status.value() == 403,
+                    response -> response.bodyToMono(String.class)
+                        .defaultIfEmpty("")
+                        .map(msg -> new ExternalApiAuthException("Token de autenticação da API externa inválido ou expirado. Status: " + response.statusCode().value() + (msg.isEmpty() ? "" : ", Detalhe: " + msg)))
+                )
                 .bodyToMono(OpenStatesJurisdictionsResponse.class)
                 .block();
     }
@@ -60,6 +66,11 @@ public class OpenStatesApiClient {
         return webClient.get()
                 .uri(uri)
                 .retrieve()
+                .onStatus(status -> status.value() == 401 || status.value() == 403,
+                    response -> response.bodyToMono(String.class)
+                        .defaultIfEmpty("")
+                        .map(msg -> new ExternalApiAuthException("Token de autenticação da API externa inválido ou expirado. Status: " + response.statusCode().value() + (msg.isEmpty() ? "" : ", Detalhe: " + msg)))
+                )
                 .bodyToMono(OpenStatesPeopleResponse.class)
                 .block();
     }
