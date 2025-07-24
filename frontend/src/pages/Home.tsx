@@ -21,7 +21,6 @@ const Home: React.FC = () => {
   const [selectedParty, setSelectedParty] = useState<string | null>(null);
   const [politicians, setPoliticians] = useState<Politician[]>([]);
   const [pagination, setPagination] = useState<PaginationData | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [loadingPoliticians, setLoadingPoliticians] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,9 +31,7 @@ const Home: React.FC = () => {
       const res = await getPoliticians(selectedState ?? undefined, selectedParty ?? undefined, page);
       setPoliticians(res.data);
       setPagination(res.pagination);
-      setCurrentPage(res.pagination.currentPage);
     } catch (err: any) {
-      // Tenta ler a mensagem de erro da API
       let errorMsg = 'Erro ao buscar políticos.';
       if (err?.response?.status === 400 && err.response.data?.errorMessage) {
         errorMsg = err.response.data.errorMessage;
@@ -47,18 +44,15 @@ const Home: React.FC = () => {
     }
   };
 
-  // Limpa a listagem ao limpar os filtros
   const handleStateChange = (id: number) => {
     setSelectedState(id || null);
     setPoliticians([]);
     setPagination(null);
-    setCurrentPage(1);
   };
   const handlePartyChange = (party: string) => {
     setSelectedParty(party || null);
     setPoliticians([]);
     setPagination(null);
-    setCurrentPage(1);
   };
 
   const handleNextPage = () => {
