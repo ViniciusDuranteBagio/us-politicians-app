@@ -9,9 +9,9 @@ import com.vinicius.uspoliticiansapp.mapper.PoliticianMapper;
 import com.vinicius.uspoliticiansapp.model.Politician;
 import com.vinicius.uspoliticiansapp.model.State;
 import com.vinicius.uspoliticiansapp.repository.PoliticianRepository;
+import com.vinicius.uspoliticiansapp.exception.ExternalApiAuthException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,8 +33,10 @@ public class PoliticianService {
     public List<PoliticianDTO> getPoliticians(Long stateId, String party) {
         List<Politician> politicians;
         
-        if (party != null && !party.trim().isEmpty()) {
+        if (party != null && !party.trim().isEmpty() && stateId != null) {
             politicians = politicianRepository.findAllByStateIdAndParty(stateId, party);
+        } else if (stateId == null) {
+            politicians = politicianRepository.findByParty(party);
         } else {
             politicians = politicianRepository.findAllByStateId(stateId);
         }
@@ -47,6 +49,12 @@ public class PoliticianService {
     }
 
     private List<Politician> fetchAndSavePoliticiansFromApi(Long stateId, String party) {
+
+        if (stateId == null)
+        {
+            throw new IllegalArgumentException("É obrigatorio selecionar um estado");
+        }
+
         List<Politician> allPoliticians = new ArrayList<>();
 
         State state = stateService.findById(stateId);

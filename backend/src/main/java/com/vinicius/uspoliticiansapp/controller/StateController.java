@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/states")
@@ -19,11 +18,16 @@ public class StateController {
         this.stateService = stateService;
     }
 
-    @GetMapping("/all")
-    public PaginatedApiResponseDTO<StateDTO> getAllStates(
+    @GetMapping()
+    public PaginatedApiResponseDTO<StateDTO> getPaginatedStates(
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") int currentPage,
             @RequestParam(value = "perPage", required = false, defaultValue = "30") int perPage
     ) {
         return PaginatedApiResponseDTO.success(stateService.getAllStates(), currentPage, perPage);
+    }
+
+    @GetMapping("/all")
+    public PaginatedApiResponseDTO<StateDTO> getAllStates() {
+        return PaginatedApiResponseDTO.success(stateService.getAllStates());
     }
 }
