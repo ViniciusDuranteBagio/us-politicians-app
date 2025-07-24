@@ -22,7 +22,7 @@ public class PoliticianController {
 
     @GetMapping
     public PaginatedApiResponseDTO<PoliticianDTO> list(
-            @RequestParam(name = "state") Long stateId,
+            @RequestParam(required = false, name = "state") Long stateId,
             @RequestParam(required = false) String party,
             @RequestParam(required = false, defaultValue = "1") int currentPage,
             @RequestParam(required = false, defaultValue = "30") int perPage
