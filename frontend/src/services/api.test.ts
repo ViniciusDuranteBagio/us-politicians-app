@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getStates, getPoliticians } from './api';
-import { State } from '../types/State';
-import { Politician } from '../types/Politician';
+import type { State } from '../types/State';
+import type { Politician } from '../types/Politician';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
